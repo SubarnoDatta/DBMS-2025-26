@@ -90,12 +90,18 @@ INSERT INTO ASSIGNED_TO (EMPNO, PNO, JOB_ROLE) VALUES
 (7001, 104, 'Analyst'),
 (7003, 105, 'Finance Lead');
 
+-- Retrieve the employee members of all employees who work on projects located in Bengaluru, Hyderabad or Mysuru
+
 SELECT a.EMPNO
 FROM ASSIGNED_TO AS a
 INNER JOIN PROJECT AS p ON p.PNO = a.PNO
 WHERE p.PLOC IN ('Bengaluru', 'Mysuru', 'Hyderabad');
 
+-- GET EMPLOYEE IDs of those employees who didn't receive incentives
+
 select e.EMPNO, e.ENAME from EMPLOYEE e LEFT JOIN INCENTIVES i ON e.EMPNO = i.EMPNO WHERE i.EMPNO is NULL;
+
+-- Find the employees name, number, dept, job role, department location and project locatin who are working for a project location same as their department location
 
 select e.EMPNO, e.ENAME, e.DEPTNO, a.JOB_ROLE, d.DLOC, p.PLOC
 FROM EMPLOYEE e
@@ -103,6 +109,8 @@ INNER JOIN DEPT d on e.DEPTNO = d.DEPTNO
 INNER JOIN ASSIGNED_TO a ON a.EMPNO = e.EMPNO
 INNER JOIN PROJECT p ON p.PNO = a.PNO
 WHERE p.PLOC = d.DLOC;
+
+-- list the names of the managers with the maximum employees
 
 select m.ENAME, m.EMPNO, COUNT(e.EMPNO) as 'Employees' FROM EMPLOYEE e
 INNER JOIN EMPLOYEE m ON m.EMPNO = e.MGR_NO
@@ -112,12 +120,18 @@ SELECT MAX(t.Reportee_Count)
 FROM ( SELECT COUNT(ENAME) as Reportee_Count FROM EMPLOYEE WHERE MGR_NO is NOT NULL GROUP BY MGR_NO) as t
 );
 
+-- display those managers names whose salary is more than the average salary of his employees
+
 SELECT m.ENAME, m.SAL, AVG(e.SAL) 'Reportee Salary Average'
 FROM EMPLOYEE e INNER JOIN EMPLOYEE m ON m.EMPNO = e.MGR_NO GROUP BY m.EMPNO, m.ENAME, m.SAL HAVING m.SAL > AVG(e.SAL);
+
+-- Find the employee details who got second maximum incentive in January 2025
 
 select e.ENAME, e.EMPNO, i.INCENTIVE_AMOUNT
 FROM EMPLOYEE e INNER JOIN INCENTIVES i ON i.EMPNO = e.EMPNO
 WHERE i.INCENTIVE_DATE BETWEEN '2025-01-01' AND '2025-01-31' ORDER BY i.INCENTIVE_AMOUNT DESC LIMIT 1 OFFSET 1;
+
+-- Displaythose emloyees who are working in the same department where their manager is working
 
 SELECT e.ENAME, m.ENAME, e.DEPTNO
 FROM EMPLOYEE e INNER JOIN EMPLOYEE m ON m.EMPNO = e.MGR_NO
